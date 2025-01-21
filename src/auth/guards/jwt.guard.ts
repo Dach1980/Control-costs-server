@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { AuthService } from '../auth.service';
 
 @Injectable()
-export class RegistrationGuard implements CanActivate {
+export class JWTGuard implements CanActivate {
   constructor(private authService: AuthService) {}
   async canActivate(
     context: ExecutionContext,
@@ -16,15 +16,19 @@ export class RegistrationGuard implements CanActivate {
     // @ts-ignore
   ): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
-    const { username } = request.body;
-    const user = await this.authService.validateUser(username);
 
-    if (user) {
-      throw new UnauthorizedException(
-        `Пользователь ${username} уже существует`,
-      );
+    const token = request.headers.authorization.split(' ')[1];
+
+    if (!token) {
+      throw new UnauthorizedException('Ошибка авторизации');
     }
 
-    return true;
+    const validToken = this.authService.verifyToken(token);
+
+    if (validToken?.error) {
+      throw new UnauthorizedException(validToken.error);
+    }
+
+    return (request.token = token);
   }
 }

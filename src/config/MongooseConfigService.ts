@@ -14,4 +14,3 @@ export class MongooseConfigService implements MongooseOptionsFactory {
   }
 }
 
-console.log('MongoDB URI:', process.env.SERVER_URL);
