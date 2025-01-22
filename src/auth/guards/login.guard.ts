@@ -23,7 +23,7 @@ export class LoginGuard implements CanActivate {
       throw new UnauthorizedException(`Пользователя ${username} не существует`);
     }
 
-    if (!user.password !== password) {
+    if (user.password !== password) {
       throw new UnauthorizedException(`Неправильный пароль`);
     }
 
